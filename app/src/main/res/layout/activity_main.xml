@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Safety Score Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/safetyScoreCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Safety Score"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvScore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="85"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:textColor="#4CAF50"
+                android:layout_marginTop="8dp" />
+                
+            <TextView
+                android:id="@+id/tvFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Personalized Feedback"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Improvement Suggestions Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/suggestionsCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/safetyScoreCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Suggestions for Improvement"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSuggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:id="@+id/actionsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/suggestionsCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnCamera"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Start Monitoring"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#4CAF50" />
+
+        <Button
+            android:id="@+id/btnHistory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Driving History"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#2196F3" />
+    </LinearLayout>
+
+    <!-- Alert Panel (initially invisible) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/alertPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/actionsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#FFCC00">
+
+            <TextView
+                android:id="@+id/tvAlertTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CAUTION"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="#D32F2F" />
+
+            <TextView
+                android:id="@+id/tvAlertMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"
+                android:text="Alert message goes here" />
+
+            <TextView
+                android:id="@+id/tvAlertSuggestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textStyle="italic"
+                android:text="Suggestion for correction" />
+
+            <Button
+                android:id="@+id/btnDismissAlert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dismiss"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Recent driving sessions (simple preview) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/recentSessionsCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:elevation="4dp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/alertPanel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recent Driving Sessions"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSessions"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Simulate Alert Button (for demo purposes) -->
+    <Button
+        android:id="@+id/btnAlert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Simulate Alert"
+        android:backgroundTint="#FF5722"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
