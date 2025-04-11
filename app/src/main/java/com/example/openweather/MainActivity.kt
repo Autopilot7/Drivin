@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var directionsApiService: com.example.openweather.network.DirectionsApiService
 
-    private val mapsApiKey = ""
+    private val mapsApiKey = "AIzaSyDKJlEwu8Wcbto8nEuXPUBWiMSwzXgWjr8" // replace with your key
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
