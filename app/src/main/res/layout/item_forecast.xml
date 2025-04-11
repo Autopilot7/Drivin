@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="2dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Day of the week (e.g., Monday, Tuesday, etc.) -->
+        <TextView
+            android:id="@+id/dayOfWeek"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Mon"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"/>
+
+        <!-- Weather condition icon (e.g., sunny, cloudy) -->
+        <ImageView
+            android:id="@+id/weatherIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/sunny"/>
+
+        <!-- Weather condition -->
+        <TextView
+            android:id="@+id/condition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Clear"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginStart="16dp"/>
+
+        <!-- Temperature -->
+        <TextView
+            android:id="@+id/temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="28°C"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

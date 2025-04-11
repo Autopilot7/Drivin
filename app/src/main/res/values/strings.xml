@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">OpenWeather</string>
+    <string name="action_go">Go</string>
+    <string name="baking_title">Baking with Gemini</string>
+    <string name="label_prompt">Prompt</string>
+    <string name="prompt_placeholder">Provide a recipe for the baked goods in the image</string>
+    <string name="image1_description">Cupcake</string>
+    <string name="image2_description">Cookies</string>
+    <string name="image3_description">Cake</string>
+    <string name="results_placeholder">(Results will appear here)</string>
+    <string name="title_activity_weather">WeatherActivity</string>
+    <string name="weather_will_appear_here">Weather will appear here</string>
+    <string name="openweather_app">OpenWeather App</string>
+    <string name="enter_city">Enter city</string>
+    <string name="get_weather">Get Weather</string>
+    <string name="weather_will_appear_heree">Weather will appear here</string>
+    <string name="refresh">Refresh</string>
+    <string name="temp_c_desc">Temp: --°C, Desc: --</string>
+</resources>
