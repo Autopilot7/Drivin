@@ -40,7 +40,8 @@ android {
 }
 
 dependencies {
-
+    // Add this to your dependencies block
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

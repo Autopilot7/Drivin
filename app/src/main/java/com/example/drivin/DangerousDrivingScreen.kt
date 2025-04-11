@@ -1,9 +1,7 @@
 package com.example.drivin.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
@@ -11,35 +9,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Canvas
-import com.example.drivin.R
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.drivin.AdviceGenerator
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 /**
  * Mô phỏng màn hình "Driver Behavior Analysis"
  * với Safety Score, logs, v.v., cộng thêm màu sắc và icon để UI trực quan hơn.
  */
-
 @Composable
 fun DriverBehaviorAnalysisScreen(
     safetyScore: Int = 78,
     scoreMessage: String = "Room for improvement",
     thisWeekScoreChange: Int = 3,
-    thisMonthScoreChange: Int = 12
+    thisMonthScoreChange: Int = 12,
+    suddenBrakesCount: Int = 0,
+    suddenAccelerationCount: Int = 0,
+    suddenDirectionChangesCount: Int = 0
 ) {
-    // Màu chính & phụ có thể thay đổi tùy ý
-    val primaryColor = Color(0xFF4CAF50)       // Xanh lá đậm
-    val backgroundColor = Color(0xFFF9F9F9)    // Màu nền nhẹ
+    // Existing colors and background setup...
+    val primaryColor = Color(0xFF4CAF50)
+    val backgroundColor = Color(0xFFF9F9F9)
     val secondaryTextColor = Color.Gray
+    val warningColor = Color(0xFFF57C00) // Orange for warnings
 
-    // Toàn màn hình background
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +50,7 @@ fun DriverBehaviorAnalysisScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Tiêu đề
+            // Title section remains the same
             Text(
                 text = "Driver Behavior Analysis",
                 style = MaterialTheme.typography.titleLarge.copy(
@@ -62,7 +62,7 @@ fun DriverBehaviorAnalysisScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Khu vực Safety Score
+            // Safety Score card with added counters
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,12 +78,11 @@ fun DriverBehaviorAnalysisScreen(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Vẽ vòng tròn có số điểm
+                    // Safety score circle remains the same
                     Box(
                         modifier = Modifier
                             .size(120.dp)
                             .drawBehind {
-                                // Vẽ vòng tròn bao quanh
                                 drawCircle(
                                     brush = SolidColor(primaryColor.copy(alpha = 0.2f)),
                                     radius = size.minDimension / 2
@@ -91,14 +90,12 @@ fun DriverBehaviorAnalysisScreen(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        // Tô vòng cung thứ 2 (giống progress) - tùy biến
                         val sweepAngle = (safetyScore / 100f) * 360f
                         CanvasProgressCircle(
                             sweepAngle = sweepAngle,
                             strokeWidth = 16f,
                             color = primaryColor
                         )
-                        // Hiển thị số điểm ở chính giữa
                         Text(
                             text = "$safetyScore",
                             style = MaterialTheme.typography.displayMedium.copy(
@@ -108,7 +105,7 @@ fun DriverBehaviorAnalysisScreen(
                             color = Color.Black
                         )
                     }
-                    // Nhãn "Safety Score"
+
                     Text(
                         text = "Safety Score",
                         style = MaterialTheme.typography.bodyMedium.copy(
@@ -117,29 +114,69 @@ fun DriverBehaviorAnalysisScreen(
                         color = Color.Black,
                         modifier = Modifier.padding(top = 8.dp)
                     )
-                    // Thông điệp
+
                     Text(
                         text = scoreMessage,
                         style = MaterialTheme.typography.bodySmall,
                         color = secondaryTextColor
                     )
+
+                    // New section: Driving Behavior Counters
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Divider(color = Color.LightGray, thickness = 1.dp)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Driving Behaviors Detected",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        BehaviorCountItem(
+                            count = suddenBrakesCount,
+                            label = "Sudden Brakes",
+                            iconVector = Icons.Default.Warning,
+                            tint = warningColor
+                        )
+
+                        BehaviorCountItem(
+                            count = suddenAccelerationCount,
+                            label = "Sudden Accelerations",
+                            iconVector = Icons.Default.Warning,
+                            tint = warningColor
+                        )
+
+                        BehaviorCountItem(
+                            count = suddenDirectionChangesCount,
+                            label = "Direction Changes",
+                            iconVector = Icons.Default.Warning,
+                            tint = warningColor
+                        )
+                    }
                 }
             }
 
+            // Rest of the existing UI components...
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Khu vực thể hiện thay đổi điểm
+            // Score change cards
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // This Week
                 ScoreChangeCard(
                     title = "This Week",
                     scoreChange = thisWeekScoreChange,
                     primaryColor = primaryColor
                 )
-                // This Month
                 ScoreChangeCard(
                     title = "This Month",
                     scoreChange = thisMonthScoreChange,
@@ -149,7 +186,7 @@ fun DriverBehaviorAnalysisScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Behavior Logs
+            // Behavior Logs card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,7 +202,6 @@ fun DriverBehaviorAnalysisScreen(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Tiêu đề
                     Text(
                         text = "Behavior Logs",
                         style = MaterialTheme.typography.bodyLarge.copy(
@@ -175,7 +211,6 @@ fun DriverBehaviorAnalysisScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Thông báo khi chưa có logs
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = "No logs",
@@ -190,13 +225,51 @@ fun DriverBehaviorAnalysisScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    DrivingAdviceCard()
+                    // In the DriverBehaviorAnalysisScreen composable, change the DrivingAdviceCard call:
+                    DrivingAdviceCard(
+                        suddenBrakesCount = suddenBrakesCount,
+                        suddenAccelerationCount = suddenAccelerationCount,
+                        suddenDirectionChangesCount = suddenDirectionChangesCount
+                    )
                 }
             }
         }
     }
 }
 
+@Composable
+fun BehaviorCountItem(
+    count: Int,
+    label: String,
+    iconVector: ImageVector,
+    tint: Color
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = count.toString(),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = if (count > 0) tint else Color.Gray
+        )
+
+        Icon(
+            imageVector = iconVector,
+            contentDescription = label,
+            tint = if (count > 0) tint else Color.Gray,
+            modifier = Modifier.size(16.dp)
+        )
+
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.DarkGray,
+            fontSize = 10.sp
+        )
+    }
+}
 /**
  * Hàm vẽ vòng cung (progress) dạng circle
  * sweepAngle là góc quét (0..360).
@@ -257,16 +330,24 @@ fun ScoreChangeCard(
         }
     }
 }
-
 @Composable
 fun DrivingAdviceCard(
-    adviceList: List<String> = listOf(
-        "Maintain a safe following distance",
-        "Reduce speed in adverse weather conditions",
-        "Avoid using phone while driving",
-        "Take regular breaks on long journeys"
-    )
+    suddenBrakesCount: Int = 0,
+    suddenAccelerationCount: Int = 0,
+    suddenDirectionChangesCount: Int = 0
 ) {
+    val adviceList = remember { AdviceGenerator.adviceList }
+    val isLoading = remember { AdviceGenerator.isLoading }
+
+    // Generate advice when component is first composed
+    LaunchedEffect(suddenBrakesCount, suddenAccelerationCount, suddenDirectionChangesCount) {
+        AdviceGenerator.generateAdvice(
+            suddenBrakesCount,
+            suddenAccelerationCount,
+            suddenDirectionChangesCount
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -290,23 +371,34 @@ fun DrivingAdviceCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            adviceList.forEach { advice ->
-                Row(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            if (isLoading.value) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = "Advice item",
-                        tint = Color(0xFF4CAF50),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = advice,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.DarkGray
-                    )
+                    CircularProgressIndicator(color = Color(0xFF4CAF50))
+                }
+            } else {
+                adviceList.value.forEach { advice ->
+                    Row(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Advice item",
+                            tint = Color(0xFF4CAF50),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = advice,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.DarkGray
+                        )
+                    }
                 }
             }
         }

@@ -34,6 +34,9 @@ class MainActivity : ComponentActivity() {
                     //suddenBrakesCount = SensorHandler.suddenBrakesCount.value,
                     //suddenAccelerationCount = SensorHandler.suddenAccelerationCount.value,
                     //suddenDirectionChangesCount = SensorHandler.suddenDirectionChangesCount.value
+                    suddenBrakesCount = 1,
+                    suddenAccelerationCount = 2,
+                    suddenDirectionChangesCount = 0
                 )
             }
         }
