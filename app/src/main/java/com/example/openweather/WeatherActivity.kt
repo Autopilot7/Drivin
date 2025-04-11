@@ -29,7 +29,7 @@ class WeatherActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWeatherBinding
     private lateinit var forecastAdapter: ForecastAdapter
-    private val apiKey = "88625e3714eaa54d2f537b42f1429987"
+    private val apiKey = ""
 
     @Inject
     lateinit var weatherService: WeatherService
