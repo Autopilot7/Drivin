@@ -3,6 +3,7 @@ package com.example.drivin_final.ui
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -44,10 +45,16 @@ class MainActivity : AppCompatActivity() {
     
     // Media player for sound alerts
     private var mediaPlayer: MediaPlayer? = null
+    
+    // Sound generator for fallback sounds
+    private lateinit var soundGenerator: com.example.drivin_final.util.SoundGenerator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Initialize sound generator
+        soundGenerator = com.example.drivin_final.util.SoundGenerator(this)
 
         // Initialize UI components
         initializeViews()
@@ -189,25 +196,37 @@ class MainActivity : AppCompatActivity() {
         // Stop any existing sound
         stopAlertSound()
         
-        // Select the appropriate sound resource
-        val soundResource = when (alertType) {
-            AlertType.WARNING -> R.raw.warning_sound
-            AlertType.DANGER -> R.raw.danger_sound
-            else -> R.raw.info_sound
-        }
-        
-        // Play the sound
         try {
-            mediaPlayer = MediaPlayer.create(this, soundResource)
-            if (mediaPlayer == null) {
-                // Fallback if the MediaPlayer couldn't create the sound (possibly due to empty/invalid sound files)
-                Toast.makeText(this, "Alert: ${alertType.name}", Toast.LENGTH_SHORT).show()
-                return
+            // Try to play sound from resources first
+            val soundResource = when (alertType) {
+                AlertType.WARNING -> R.raw.warning_sound
+                AlertType.DANGER -> R.raw.danger_sound
+                else -> R.raw.info_sound
             }
-            mediaPlayer?.start()
+            
+            // Try to use MediaPlayer with resource files
+            mediaPlayer = MediaPlayer.create(this, soundResource)
+            
+            if (mediaPlayer != null) {
+                mediaPlayer?.start()
+            } else {
+                // If MediaPlayer failed (possibly due to empty/missing sound files),
+                // use the SoundGenerator as fallback
+                when (alertType) {
+                    AlertType.WARNING -> soundGenerator.playWarningAlert()
+                    AlertType.DANGER -> soundGenerator.playDangerAlert()
+                    else -> soundGenerator.playInfoAlert()
+                }
+            }
         } catch (e: Exception) {
-            // Fallback to a simple Toast if sound cannot be played
-            Toast.makeText(this, "Alert: ${alertType.name}", Toast.LENGTH_SHORT).show()
+            // If any error occurs, use SoundGenerator as fallback
+            when (alertType) {
+                AlertType.WARNING -> soundGenerator.playWarningAlert()
+                AlertType.DANGER -> soundGenerator.playDangerAlert()
+                else -> soundGenerator.playInfoAlert()
+            }
+            // Log the error but don't show to user since we have a fallback
+            Log.e("MainActivity", "Error playing sound from resources: ${e.message}")
         }
     }
     
@@ -224,5 +243,9 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopAlertSound()
+        // Release sound generator
+        if (::soundGenerator.isInitialized) {
+            soundGenerator.release()
+        }
     }
 }

@@ -1,21 +1,36 @@
 package com.example.drivin_final.ui.viewmodel
 
+import android.app.Application
 import android.media.MediaPlayer
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.drivin_final.data.repository.DriverRepository
 import com.example.drivin_final.data.repository.DrivingEvent
 import com.example.drivin_final.data.repository.DrivingEventType
 import com.example.drivin_final.data.repository.DrivingSession
 import com.example.drivin_final.data.repository.EventCategory
+import com.example.drivin_final.receivers.DetectionEventReceiver
+import com.example.drivin_final.util.SoundGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: DriverRepository
-) : ViewModel() {
+    private val repository: DriverRepository,
+    private val application: Application
+) : AndroidViewModel(application) {
+
+    private val soundGenerator = SoundGenerator(application)
+    private val context = application.applicationContext
+    private var receiver: DetectionEventReceiver? = null
+
+    companion object {
+        private const val TAG = "MainViewModel"
+    }
 
     // LiveData for real-time safety score updates
     private val _safetyScore = MutableLiveData<Int>(repository.computeSafetyScore())
@@ -44,6 +59,68 @@ class MainViewModel @Inject constructor(
     // Track if a dangerous behavior is currently being detected
     private val _dangerousBehaviorDetected = MutableLiveData<DangerousBehavior?>(null)
     val dangerousBehaviorDetected: LiveData<DangerousBehavior?> = _dangerousBehaviorDetected
+
+    /**
+     * Register the detection event receiver
+     */
+    fun registerReceiver() {
+        if (receiver == null) {
+            receiver = DetectionEventReceiver(this)
+            receiver?.register(context)
+            Log.d(TAG, "Detection receiver registered")
+        }
+    }
+
+    /**
+     * Unregister the detection event receiver
+     */
+    fun unregisterReceiver() {
+        receiver?.let {
+            it.unregister(context)
+            receiver = null
+            Log.d(TAG, "Detection receiver unregistered")
+        }
+    }
+
+    /**
+     * Handle drowsiness detection events
+     */
+    fun reportDrowsiness(severity: String) {
+        Log.d(TAG, "Processing drowsiness alert with severity: $severity")
+        viewModelScope.launch {
+            when (severity) {
+                DetectionEventReceiver.SEVERITY_WARNING -> {
+                    soundGenerator.playInfoAlert()
+                }
+                DetectionEventReceiver.SEVERITY_SERIOUS -> {
+                    soundGenerator.playWarningAlert()
+                }
+                DetectionEventReceiver.SEVERITY_FATAL -> {
+                    soundGenerator.playDangerAlert()
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle distraction detection events
+     */
+    fun reportDistraction(severity: String) {
+        Log.d(TAG, "Processing distraction alert with severity: $severity")
+        viewModelScope.launch {
+            when (severity) {
+                DetectionEventReceiver.SEVERITY_WARNING -> {
+                    soundGenerator.playInfoAlert()
+                }
+                DetectionEventReceiver.SEVERITY_SERIOUS -> {
+                    soundGenerator.playWarningAlert()
+                }
+                DetectionEventReceiver.SEVERITY_FATAL -> {
+                    soundGenerator.playDangerAlert()
+                }
+            }
+        }
+    }
 
     // Refresh all data from repository
     fun refreshData() {
@@ -148,6 +225,11 @@ class MainViewModel @Inject constructor(
         )
         
         addDrivingEvent(event)
+    }
+
+    override fun onCleared() {
+        unregisterReceiver()
+        super.onCleared()
     }
 }
 

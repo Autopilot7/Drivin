@@ -220,4 +220,104 @@ class DriverRepository @Inject constructor() {
         val formatter = SimpleDateFormat("MMM dd, yyyy - HH:mm", Locale.getDefault())
         return formatter.format(date)
     }
+
+    // Add additional history functionality
+    
+    // Get average safety score across all sessions
+    fun getAverageSafetyScore(): Float {
+        if (drivingSessions.isEmpty()) return 0f
+        return drivingSessions.map { it.safetyScore }.average().toFloat()
+    }
+    
+    // Get the most common issue category across all sessions
+    fun getMostCommonIssueCategoryAcrossSessions(): EventCategory? {
+        if (drivingSessions.isEmpty()) return null
+        
+        val allEvents = drivingSessions.flatMap { it.events }
+        return allEvents
+            .groupBy { it.category }
+            .maxByOrNull { it.value.size }
+            ?.key
+    }
+    
+    // Export a session summary as text
+    fun exportSessionSummary(sessionId: String): String {
+        val session = drivingSessions.find { it.id == sessionId } ?: return "Session not found"
+        
+        val builder = StringBuilder()
+        builder.append("DRIVING SESSION REPORT\n")
+        builder.append("=====================\n\n")
+        builder.append("Date: ${formatSessionDate(session.date)}\n")
+        builder.append("Duration: ${session.duration} minutes\n")
+        builder.append("Safety Score: ${session.safetyScore}\n\n")
+        
+        builder.append("EVENTS DETECTED:\n")
+        if (session.events.isEmpty()) {
+            builder.append("No events detected during this session.\n")
+        } else {
+            // Group events by category
+            val eventsByCategory = session.events.groupBy { it.category }
+            eventsByCategory.forEach { (category, events) ->
+                builder.append("\n${category.name} (${events.size}):\n")
+                events.forEach { event ->
+                    val severity = when (event.type) {
+                        DrivingEventType.ROOKIE -> "Minor"
+                        DrivingEventType.SERIOUS -> "Serious"
+                        DrivingEventType.FATAL -> "Critical"
+                    }
+                    builder.append("- [$severity] ${event.description}\n")
+                }
+            }
+            
+            builder.append("\nSUGGESTIONS FOR IMPROVEMENT:\n")
+            val suggestions = session.events.map { it.suggestionForImprovement }.distinct()
+            suggestions.forEach { suggestion ->
+                builder.append("- $suggestion\n")
+            }
+        }
+        
+        return builder.toString()
+    }
+    
+    // Get driving trends showing improvement or deterioration
+    fun getDrivingTrend(): String {
+        if (drivingSessions.size < 2) return "Not enough data to establish a trend."
+        
+        // Sort sessions by date
+        val sortedSessions = drivingSessions.sortedBy { it.date }
+        
+        // Calculate score differences
+        val scoreDeltas = mutableListOf<Int>()
+        for (i in 1 until sortedSessions.size) {
+            scoreDeltas.add(sortedSessions[i].safetyScore - sortedSessions[i-1].safetyScore)
+        }
+        
+        // Calculate average improvement/deterioration
+        val avgChange = scoreDeltas.average()
+        
+        return when {
+            avgChange > 5 -> "Your driving is showing significant improvement!"
+            avgChange > 0 -> "Your driving is gradually improving."
+            avgChange == 0.0 -> "Your driving performance is consistent."
+            avgChange > -5 -> "Your driving has slightly deteriorated."
+            else -> "Your driving has significantly deteriorated. Please review the safety suggestions."
+        }
+    }
+    
+    // Find the worst driving event in a session
+    fun getWorstEventInSession(sessionId: String): DrivingEvent? {
+        val session = drivingSessions.find { it.id == sessionId } ?: return null
+        
+        // Find the most severe event
+        val fatalEvents = session.events.filter { it.type == DrivingEventType.FATAL }
+        if (fatalEvents.isNotEmpty()) return fatalEvents.first()
+        
+        val seriousEvents = session.events.filter { it.type == DrivingEventType.SERIOUS }
+        if (seriousEvents.isNotEmpty()) return seriousEvents.first()
+        
+        val rookieEvents = session.events.filter { it.type == DrivingEventType.ROOKIE }
+        if (rookieEvents.isNotEmpty()) return rookieEvents.first()
+        
+        return null
+    }
 }

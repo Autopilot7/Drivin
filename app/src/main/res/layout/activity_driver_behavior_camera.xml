@@ -1,5 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.camera.view.PreviewView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/previewView"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Status Bar at the top -->
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#80000000"
+        android:padding="12dp"
+        android:text="Face detection status: Initializing..."
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:elevation="4dp" />
+        
+    <!-- Visual Alert Panel for unusual behaviors -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/behaviorAlertPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        android:visibility="gone">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+            
+            <TextView
+                android:id="@+id/alertTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ALERT"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="#FFFFFF" />
+                
+            <TextView
+                android:id="@+id/alertMessageTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Unusual behavior detected!"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                android:textColor="#FFFFFF" />
+                
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/dismissAlertButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dismiss"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    
+    <!-- Back Button (floating) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="24dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:backgroundTint="@color/white"
+        app:tint="@color/primary"
+        app:elevation="6dp" />
+
+</FrameLayout>
