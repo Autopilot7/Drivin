@@ -48,7 +48,7 @@ android {
 
 dependencies {
     implementation(libs.android.maps.utils)
-
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 

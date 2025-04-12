@@ -64,7 +64,7 @@ fun WeatherScreen(
                 }
 
                 // Set weather alert (hardcoded)
-                binding.textViewWeatherAlert.text = "Weather Alert: Thunderstorm expected later today."
+                binding.textViewWeatherAlert.text = "Weather Alert: Thunderstorm expected later today.Stay indoors or park on high ground. Avoid trees, unstable spots, and roadsides to prevent flooding your vehicle and congestion"
 
                 // Update forecast list
                 val forecastAdapter = binding.recyclerViewForecast.adapter as? ForecastAdapter

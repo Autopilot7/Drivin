@@ -19,6 +19,8 @@ import com.example.openweather.ui.weather.WeatherScreen
 import com.example.openweather.ui.theme.OpenWeatherTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,7 +44,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabbedApp(
@@ -51,6 +52,19 @@ fun TabbedApp(
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) } // Default to Weather tab
     val context = LocalContext.current
+
+    // Initialize SensorHandler for the Driver Behavior screen
+    LaunchedEffect(Unit) {
+        SensorHandler.init(context)
+        SensorHandler.register()
+    }
+
+    // Clean up sensor listener when the activity is destroyed
+    DisposableEffect(Unit) {
+        onDispose {
+            SensorHandler.unregister()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -84,10 +98,19 @@ fun TabbedApp(
                 when (selectedTabIndex) {
                     0 -> WeatherScreen()
                     1 -> MapScreen(context, directionsApiService, mapsApiKey)
+                    2 -> DriverBehaviorAnalysisScreen(
+                        safetyScore = SensorHandler.safeScoreState.value,
+                        //suddenBrakesCount = SensorHandler.suddenBrakesCount.value,
+                        //suddenAccelerationCount = SensorHandler.suddenAccelerationCount.value,
+                        //suddenDirectionChangesCount = SensorHandler.suddenDirectionChangesCount.value
+                        suddenBrakesCount = 1,
+                        suddenAccelerationCount = 2,
+                        suddenDirectionChangesCount = 0
+                    )
                 }
             }
 
-            // Modern bottom navigation
+            // Bottom navigation
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.onBackground
@@ -118,6 +141,22 @@ fun TabbedApp(
                         )
                     },
                     label = { Text("Map") },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                )
+                NavigationBarItem(
+                    selected = selectedTabIndex == 2,
+                    onClick = { selectedTabIndex = 2 },
+                    icon = {
+                        Icon(
+                            Icons.Filled.Warning,
+                            contentDescription = "Driver Advice"
+                        )
+                    },
+                    label = { Text("Driver Advice") },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         selectedTextColor = MaterialTheme.colorScheme.primary,

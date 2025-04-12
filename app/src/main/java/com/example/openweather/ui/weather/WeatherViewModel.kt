@@ -68,8 +68,9 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
+
     fun getTipForCondition(condition: String?): String {
-        return tips[condition ?: ""] ?: "No specific driving tips for this weather condition."
+        return tips[condition ?: ""] ?: "Use low beams instead of high beams. Keep a safe distance from the vehicle ahead. Ensure wipers and defoggers are on. Avoid sudden braking or sharp turns."
     }
 
     private fun generateNext7DaysForecast(): List<ForecastDay> {
